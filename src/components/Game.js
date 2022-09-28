@@ -3,6 +3,8 @@ import Board from './Board';
 import GameSize from './GameSize';
 import HistoryCell from './HistoryCell';
 import Status from './Status';
+import Alert from './Alert';
+import SortMove from './SortMove';
 import calculateWinner from './helpers/GameHelper';
 
 class Game extends React.Component {
@@ -17,7 +19,8 @@ class Game extends React.Component {
       xIsNext: true,
       xCount: 0,
       gameSize: 9,
-      isPlaying: false
+      isPlaying: false,
+      isDesc: false
     };
   }
 
@@ -47,20 +50,41 @@ class Game extends React.Component {
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
-      isPlaying: (step === 0)? false: true
+      isPlaying: (step === 0)? false: true,
+      xCount: Math.ceil(step / 2)
     });
   }
 
   onGameSizeChange(size) {
-    const newSize = size**2 - this.state.gameSize**2;
+    // const newSize = size**2 - this.state.gameSize**2;
     this.setState({
-      gameSize: size,
-      history: [
-        ...this.state.history,
-        {
-          squares: [...this.state.history[this.state.stepNumber].squares, ...Array(newSize > 0 ? newSize: -newSize).fill(null)]
-        }]
+      gameSize: size
+      // history: [
+      //   ...this.state.history,
+      //   {
+      //     squares: [...this.state.history[this.state.stepNumber].squares, ...Array(newSize > 0 ? newSize: -newSize).fill(null)]
+      //   }]
     })
+  }
+
+  reverseMove() {
+    this.setState({
+      isDesc: !this.state.isDesc,
+    })
+  }
+
+  resetGame() {
+    this.setState({
+      history: [{
+        squares: Array(81).fill(null),
+        stepValue: null,
+      }],
+      stepNumber: 0,
+      xIsNext: true,
+      xCount: 0,
+      gameSize: 9,
+      isPlaying: false
+    });
   }
 
   render() {
@@ -68,14 +92,16 @@ class Game extends React.Component {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares, this.state.gameSize);
 
-    let status, positionWin;
+    let status, positionWin, gameAlert;
     if (winner) {
       let text = 'Winner ' + winner.player;
       status = <Status status={text} className='text-red'/>
+      gameAlert = <Alert message={'Winner ' + winner.player}  />
       positionWin = winner.positionWin;
     }
     else if(this.state.xCount >= (this.state.gameSize**2) / 2) {
       status = <Status status='Tie score' className='text-red'/>
+      gameAlert = <Alert message='Tie score'  />
     } else {
       let text = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
       status = <Status status={text} className=''/>
@@ -84,6 +110,7 @@ class Game extends React.Component {
 
     return (
       <div className="game">
+        {gameAlert}
         <GameSize
           isPlaying={this.state.isPlaying}
           onChange={(e)=>this.onGameSizeChange(e)}
@@ -92,11 +119,13 @@ class Game extends React.Component {
         <div className="game-container">
           <div className="game-info">
             <div>{status}</div>
+            <SortMove onChange={(e)=>this.reverseMove(e)}/>
             <HistoryCell 
               history={history}
               stepNumber={this.state.stepNumber}
               gameSize={this.state.gameSize}
               onClick={(i) => this.jumpTo(i)}
+              isDesc={this.state.isDesc}
             />
 
           </div>
