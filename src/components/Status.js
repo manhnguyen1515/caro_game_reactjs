@@ -1,16 +1,11 @@
 import React from 'react';
 
-class Status extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-    render() {
-       return <div className={this.props.className}>
-        {this.props.status}
-       </div>
-    }
+function Status(props) {
+    return (
+    <div className={props.className}>
+        {props.status}
+    </div>
+    )
 }
 
 export default Status;

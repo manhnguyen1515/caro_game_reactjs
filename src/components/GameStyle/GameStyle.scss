@@ -27,8 +27,9 @@ ol, ul {
     width: 34px;
   }
   
-  .square:focus {
-    outline: none;
+  .square:focus, .square-hightlight{
+    border: 3px solid #1C6EA4;
+    border-radius: 2px;
   }
   
   .kbd-navigation .square:focus {
@@ -60,16 +61,6 @@ ol, ul {
 
   .d-none {
     display: none;
-  }
-  
-  .text-red {
-    color: red;
-  }
-
-  .text-small {
-    color: #999;
-    font-size: 9px;
-    text-align: left;
   }
 
   .history-coor {
